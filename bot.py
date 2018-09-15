@@ -60,10 +60,6 @@ async def receive(request):
             await message_process(content, data, auto_model=True)
     if AT_ME in content:
 
-        if group_id != '338968989':
-            await send_message('bot停机升级中', data)
-            return web.Response()
-
         if '-h' in content or '-help' in content:
             await send_help(data)
         elif 'sakugabooru.com/post/show/' in content:
