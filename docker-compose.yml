@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+
+  cqhttp:
+    image: 'richardchien/cqhttp:latest'
+    ports:
+      - '9000:9000'
+      - '5700:5700'
+    volumes:
+      - coolq:/coolq
+    environment:
+      - COOLQ_ACCOUNT=1262131302
+      - CQHTTP_POST_URL=http://qqbot:5000/
+      - CQHTTP_SERVE_DATA_FILES=yes
+    networks:
+      - net
+
+  qqbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python bot.py
+    volumes:
+      - qqbot:/qqbot
+    ports:
+      - '5000:5000'
+    networks:
+      - net
+
+networks:
+  net:
+
+volumes:
+  coolq:
+  qqbot:
