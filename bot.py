@@ -133,7 +133,7 @@ async def send_group_message(message, group_id):
 
 
 async def blank_at_process(data):
-    content = PRE_BOORU_ABOUT_MSG.get(data['group_id'], None)
+    content = PRE_BOORU_ABOUT_MSG.get(str(data['group_id']), None)
     logger.info('处理空at from ' + str(data['group_id']))
     if content:
         await message_process(content, data)
