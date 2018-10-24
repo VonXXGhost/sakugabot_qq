@@ -81,17 +81,14 @@ async def message_process(message, data, auto_model=False):
     try:
         async with ClientSession() as session:
             async with session.get(BOT_API_URL_TEMPLATE.format(id)) as response:
-                j = await response.json()
                 if response.status == 404:
                     logger.error('404 of ' + id)
                     if not auto_model:
                         await send_message('服务器中暂无此条目数据', data)
                 elif response.status == 200:
                     try:
-                        gif_url = j['weibo']['img_url']
-                        if gif_url is None:
-                            raise RuntimeError('no img url')
-                        await send_gif_url(gif_url, id, data)
+                        j = await response.json()
+                        await send_info_and_url(id, j, data)
                     except:
                         logger.error(id + ' 暂未有微博数据')
                         if not auto_model:
@@ -106,6 +103,24 @@ async def message_process(message, data, auto_model=False):
 
 async def send_gif_url(gif_url, id, data):
     await send_message(''.join([id, ':\n', gif_url]), data)
+
+
+async def send_info_and_url(id, post_info, data):
+    gif_url = post_info['weibo']['img_url']
+    if gif_url is None:
+        raise RuntimeError('no img url')
+    tags = post_info.get('tags', [])
+    copyright, artist = [], []
+    source = post_info.get('source', '/')
+    for tag in tags:
+        if tag['type'] == 3:
+            copyright.append(tag['main_name'])
+        if tag['type'] == 1:
+            artist.append(tag['main_name'])
+    text = ''.join([
+        str(id), ':\n', '，'.join(copyright), source + ' ', '，'.join(artist), '\n' + gif_url
+    ])
+    await send_message(text, data)
 
 
 async def send_message(message, data):
