@@ -22,7 +22,7 @@ services:
       dockerfile: Dockerfile
     command: python bot.py
     volumes:
-      - qqbot:/qqbot
+      - .:/booru_qqbot
     ports:
       - '5000:5000'
     networks:
@@ -33,4 +33,3 @@ networks:
 
 volumes:
   coolq:
-  qqbot:
