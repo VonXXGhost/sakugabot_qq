@@ -118,7 +118,7 @@ async def send_info_and_url(id, post_info, data):
         if tag['type'] == 1:
             artist.append(tag['main_name'])
     text = ''.join([
-        str(id), ':\n', '，'.join(copyright), source + ' ', '，'.join(artist), '\n' + gif_url
+        str(id), ':\n', '，'.join(copyright), ' ' + source + ' ', '，'.join(artist), '\n' + gif_url
     ])
     await send_message(text, data)
 
