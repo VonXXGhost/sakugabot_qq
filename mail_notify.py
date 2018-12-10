@@ -4,7 +4,13 @@ from smtplib import SMTP_SSL
 import requests
 import time
 import logging
+import os
 
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - [%(levelname)s]: %(message)s',
+                    datefmt='%a, %d %b %Y %H:%M:%S',
+                    filename=os.path.join('.', 'notify.log'),
+                    filemode='a')
 logger = logging.getLogger(__name__)
 # qq邮箱smtp服务器
 host_server = 'smtp.qq.com'
@@ -15,7 +21,7 @@ pwd = ''
 # 发件人的邮箱
 sender_mail = 'vonxxghost@foxmail.com'
 # 监听状态
-status_url = 'http:/xxxx:5700/get_status'
+status_url = 'http://cqhttp:5700/get_status'
 
 
 def send_mail_to_self(title, content):
@@ -39,6 +45,8 @@ def listen_if_online():
         try:
             response = requests.get(status_url).json()
             good = response['data']['good']
+            if good != last_good:
+                logger.info('状态变化，现在为{}'.format(str(good)))
             if last_good and not good:  # 仅在好状态变为坏状态时发送
                 send_mail_to_self('qqbot掉线了', 'RT')
                 logger.info('掉线通知邮件已发送')
@@ -49,5 +57,4 @@ def listen_if_online():
             time.sleep(60 * 5)
 
 
-if __name__ == '__main__':
-    listen_if_online()
+listen_if_online()
