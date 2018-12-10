@@ -28,6 +28,16 @@ services:
     networks:
       - net
 
+  notify:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      command: python mail_notify.py
+      volumes:
+      - .:/booru_qqbot
+      networks:
+      - net
+
 networks:
   net:
 
