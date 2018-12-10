@@ -32,11 +32,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      command: python mail_notify.py
-      volumes:
-      - .:/booru_qqbot
-      networks:
-      - net
+    command: python mail_notify.py
+    volumes:
+    - .:/booru_qqbot
+    networks:
+    - net
 
 networks:
   net:
