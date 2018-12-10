@@ -75,30 +75,31 @@ async def receive(request):
 
 
 async def message_process(message, data, auto_model=False):
-    id = re.findall(r'(?<=post/show/)(\d+)', message)[0]
-    if not id:
+    ids = re.findall(r'(?<=post/show/)(\d+)', message)
+    if not ids:
         return
-    try:
-        async with ClientSession() as session:
-            async with session.get(BOT_API_URL_TEMPLATE.format(id)) as response:
-                if response.status == 404:
-                    logger.error('404 of ' + id)
-                    if not auto_model:
-                        await send_message('服务器中暂无此条目数据', data)
-                elif response.status == 200:
-                    try:
-                        j = await response.json()
-                        await send_info_and_url(id, j, data)
-                    except:
-                        logger.error(id + ' 暂未有微博数据')
+    for id in ids:
+        try:
+            async with ClientSession() as session:
+                async with session.get(BOT_API_URL_TEMPLATE.format(id)) as response:
+                    if response.status == 404:
+                        logger.error('404 of ' + id)
                         if not auto_model:
-                            await send_message("服务器中暂无此条目数据", data)
-                elif not auto_model:
-                    logger.error(response.text)
-                    await send_message("服务器出错，请稍后再试", data)
-    except Exception as e:
-        logger.error(e)
-        await send_message("服务器出错，请稍后再试", data)
+                            await send_message('服务器中暂无此条目数据', data)
+                    elif response.status == 200:
+                        try:
+                            j = await response.json()
+                            await send_info_and_url(id, j, data)
+                        except:
+                            logger.error(id + ' 暂未有微博数据')
+                            if not auto_model:
+                                await send_message("服务器中暂无此条目数据", data)
+                    elif not auto_model:
+                        logger.error(response.text)
+                        await send_message("服务器出错，请稍后再试", data)
+        except Exception as e:
+            logger.error(e)
+            await send_message("服务器出错，请稍后再试", data)
 
 
 async def send_gif_url(gif_url, id, data):
