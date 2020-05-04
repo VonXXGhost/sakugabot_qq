@@ -22,12 +22,8 @@ PRE_BOORU_ABOUT_MSG = {}
 BOT_API_URL_TEMPLATE = 'https://sakugabot.pw/api/posts/{0}'
 AT_ME = '[CQ:at,qq=1262131302]'
 
-HELP_MESSAGE = '使用指南：\n在群里at本账号同时附上sakugabooru的稿件链接，本账号将搜索是否存在微博gif数据， ' \
-               '如果存在则发送gif地址到群里，否则报错。\n如果同一条信息里没有链接， ' \
-               '则会使用聊天记录中最近的一条booru链接（小概率可能会找错，尽量使用第一种方法）。\n ' \
-               'at时附上"-auto"可开启自动检测链接模式，若需取消附上"-no-auto"即可，默认开启。' \
-               '自动模式下不会发送不存在的条目信息和错误信息，同时at模式仍然有效。\n' \
-               'at本账号同时带上"-h"或"-help"可再次获取本帮助。'
+HELP_MESSAGE = '使用指南：\n在群里发送sakugabooru的稿件链接，本账号将自动搜索是否存在微博gif数据， ' \
+               '如果存在则发送gif地址到群里，不存在就无反应，你也不用at我因为只会报错。'
 
 # 设置初始化
 if not os.path.exists('bot_auto_settings'):
@@ -106,10 +102,12 @@ async def message_process(message, auto_model=False):
                         return '服务器出错，请稍后再试'
         except Exception as e:
             logger.error(e)
-            return '服务器出错，请稍后再试'
+            return None
 
 
 async def gene_info_and_url(id, post_info):
+    if post_info['weibo'] == None:
+        raise RuntimeError('no img url')
     gif_url = post_info['weibo']['img_url']
     if gif_url is None:
         raise RuntimeError('no img url')
